@@ -294,6 +294,77 @@ export const ASSET_DISCOVERY_EXTERNAL_TOOL_CALLS: SecurityDedicatedSubagentExter
 			"Probe only authorized targets using bounded HTTP checks. Record evidence as service observations, not vulnerabilities.",
 		safetyConstraints: sharedAssetSafetyConstraints,
 	},
+	{
+		method: "Technology fingerprinting",
+		category: "authorized_terminal",
+		required: false,
+		inputsNeeded: [
+			"authorized HTTP endpoints or service banners",
+			"reviewed WhatWeb, Wappalyzer, httpx tech-detect, or Nmap service/version output",
+			"rate limits and confidence threshold",
+		],
+		expectedOutput:
+			"server, framework, CMS, CDN/WAF, language, package, plugin, and product/version hints with source and confidence",
+		useWhen:
+			"Use during asset discovery when service ownership, platform grouping, or downstream attack-surface prioritization depends on technology identity.",
+		prompt:
+			"Prefer WhatWeb, Wappalyzer, httpx -tech-detect, or imported Nmap -sV evidence for authorized endpoints. Record fingerprint confidence and source; do not treat a fingerprint as vulnerability proof.",
+		safetyConstraints: sharedAssetSafetyConstraints,
+	},
+	{
+		method: "Path and content discovery",
+		category: "authorized_terminal",
+		required: false,
+		inputsNeeded: [
+			"authorized HTTP endpoint",
+			"approved wordlist or imported dirsearch/ffuf/gobuster output",
+			"bounded rate, filters, recursion choice, and stop conditions",
+		],
+		expectedOutput:
+			"candidate paths, files, directories, admin panels, documentation endpoints, status codes, content lengths, redirects, and false-positive filters",
+		useWhen:
+			"Use when the asset inventory must include reachable web paths or documentation endpoints and passive/crawl sources leave gaps.",
+		prompt:
+			"Use Dirsearch, FFUF, or Gobuster only against authorized endpoints with non-destructive wordlists, bounded rate, status/size filters, and no credential or sensitive-data brute forcing.",
+		safetyConstraints: [
+			...sharedAssetSafetyConstraints,
+			"Require explicit approval for path brute forcing, vhost brute forcing, recursion, high-rate requests, or large wordlists.",
+			"Do not brute force credentials, tokens, private data, upload paths with writes, or destructive methods.",
+		],
+	},
+	{
+		method: "Virtual host discovery",
+		category: "authorized_terminal",
+		required: false,
+		inputsNeeded: [
+			"authorized IP, hostname, or HTTP service",
+			"approved vhost wordlist or imported ffuf/gobuster vhost output",
+			"host-header scope, rate limits, and false-positive baseline",
+		],
+		expectedOutput:
+			"candidate virtual hosts, response differences, status codes, titles, content lengths, and scope caveats",
+		useWhen:
+			"Use when shared infrastructure, wildcard DNS, or IP-only HTTP services may hide authorized virtual hosts.",
+		prompt:
+			"Use FFUF or Gobuster vhost mode only for authorized hosts/IPs. Baseline wildcard responses, keep request rates bounded, and do not add discovered sibling domains to scope without user approval.",
+		safetyConstraints: [
+			...sharedAssetSafetyConstraints,
+			"Do not treat discovered virtual hosts as authorized unless they match the explicit scope or the user approves scope expansion.",
+		],
+	},
+	{
+		method: "Robots and sitemap discovery",
+		category: "passive_osint",
+		required: false,
+		inputsNeeded: ["authorized base URL", "robots.txt, sitemap.xml, or known metadata URLs"],
+		expectedOutput:
+			"robots directives, sitemap URLs, documented paths, API/documentation hints, last-modified clues, and source URLs",
+		useWhen:
+			"Use before active path discovery to collect low-noise route and metadata hints from public web metadata.",
+		prompt:
+			"Fetch robots.txt, sitemap.xml, and linked public sitemaps as read-only metadata. Treat disallowed paths as clues only, not permission to access private content.",
+		safetyConstraints: sharedAssetSafetyConstraints,
+	},
 
 	{
 		method: "Internet exposure index search",

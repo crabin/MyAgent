@@ -671,6 +671,10 @@ describe("security subagent", () => {
 			"Attack surface relationship mapping",
 			"DNS resolution validation",
 			"HTTP service probing",
+			"Technology fingerprinting",
+			"Path and content discovery",
+			"Virtual host discovery",
+			"Robots and sitemap discovery",
 			"Internet exposure index search",
 			"Public code and documentation search",
 			"Cloud asset inventory import",
@@ -716,6 +720,15 @@ describe("security subagent", () => {
 			"do not assume 120s is enough",
 		);
 		expect(calls.find((call) => call.method === "Nmap")?.safetyConstraints.join("\n")).toContain("NSE scripts");
+		expect(calls.find((call) => call.method === "Technology fingerprinting")?.prompt).toContain("WhatWeb");
+		expect(calls.find((call) => call.method === "Path and content discovery")?.prompt).toContain("FFUF");
+		expect(
+			calls.find((call) => call.method === "Path and content discovery")?.safetyConstraints.join("\n"),
+		).toContain("path brute forcing");
+		expect(calls.find((call) => call.method === "Virtual host discovery")?.expectedOutput).toContain(
+			"candidate virtual hosts",
+		);
+		expect(calls.find((call) => call.method === "Robots and sitemap discovery")?.prompt).toContain("robots.txt");
 		expect(calls.find((call) => call.method === "Attack surface relationship mapping")?.prompt).toContain(
 			"Prefer passive",
 		);
@@ -789,7 +802,9 @@ describe("security subagent", () => {
 		]);
 		expect(externalCalls.find((call) => call.method === "Service Discovery")?.expectedOutput).toContain("open ports");
 		expect(externalCalls.find((call) => call.method === "Service Discovery")?.useWhen).toContain("Nmap");
+		expect(externalCalls.find((call) => call.method === "Technology Fingerprinting")?.prompt).toContain("Wappalyzer");
 		expect(externalCalls.find((call) => call.method === "Route Discovery")?.prompt).toContain("bounded rate");
+		expect(externalCalls.find((call) => call.method === "Route Discovery")?.prompt).toContain("Gobuster");
 		expect(externalCalls.find((call) => call.method === "API & Metadata Discovery")?.prompt).toContain(
 			"explicit approval",
 		);
@@ -866,6 +881,7 @@ describe("security subagent", () => {
 			"highest-confidence",
 		);
 		expect(POC_RESEARCH_SUBAGENT.prompt.systemPrompt).toContain("externalToolCalls as the primary source plan");
+		expect(POC_RESEARCH_SUBAGENT.prompt.systemPrompt).toContain("technology fingerprints");
 		expect(POC_RESEARCH_SUBAGENT.prompt.systemPrompt).toContain("do not use security_explore as a shortcut");
 	});
 

@@ -261,18 +261,22 @@ export const ATTACK_SURFACE_ANALYSIS_EXTERNAL_TOOL_CALLS: SecurityDedicatedSubag
 		inputsNeeded: ["authorized host/URL list", "reviewed command", "metadata flags"],
 		expectedOutput: "HTTP services, status codes, titles, technologies, TLS metadata, and redirects",
 		useWhen: "Use as a primary HTTP surface normalizer after asset discovery.",
-		prompt: "Run or import httpx output for authorized hosts to normalize HTTP endpoints and metadata.",
+		prompt:
+			"Run or import httpx output for authorized hosts to normalize HTTP endpoints, titles, redirects, TLS metadata, favicon hashes, and technology hints.",
 		safetyConstraints: sharedAttackSurfaceSafetyConstraints,
 	},
 	{
 		method: "Technology Fingerprinting",
 		category: "authorized_terminal",
 		required: true,
-		inputsNeeded: ["authorized HTTP endpoints", "WhatWeb/Wappalyzer/BuiltWith output or reviewed command"],
+		inputsNeeded: [
+			"authorized HTTP endpoints",
+			"WhatWeb/Wappalyzer/httpx tech-detect/Nmap -sV/BuiltWith output or reviewed command",
+		],
 		expectedOutput: "CMS, frameworks, server/CDN hints, analytics, hosting, plugins, and confidence notes",
 		useWhen: "Use as the primary technology fingerprint source for HTTP endpoints.",
 		prompt:
-			"Run/import WhatWeb for active authorized endpoints and use Wappalyzer or BuiltWith as corroborating public context; record confidence and source for each technology claim.",
+			"Run/import WhatWeb, Wappalyzer, httpx -tech-detect, Nmap -sV, or BuiltWith context for authorized endpoints; record confidence, source, and version caveats for each technology claim.",
 		safetyConstraints: sharedAttackSurfaceSafetyConstraints,
 	},
 	{
@@ -300,7 +304,7 @@ export const ATTACK_SURFACE_ANALYSIS_EXTERNAL_TOOL_CALLS: SecurityDedicatedSubag
 		useWhen:
 			"Use when approved path, vhost, file, or content discovery is needed after passive and crawl sources leave gaps.",
 		prompt:
-			"Select Dirsearch, FFUF, or Gobuster by route-discovery objective. Use explicit authorization, tight filters, bounded rate, and non-destructive wordlists; avoid sensitive brute force.",
+			"Select Dirsearch, FFUF, or Gobuster by route, file, content, or vhost objective. Use explicit authorization, tight filters, bounded rate, recursion limits, and non-destructive wordlists; avoid credential, token, private-data, and sensitive brute force.",
 		safetyConstraints: sharedAttackSurfaceSafetyConstraints,
 	},
 	{
@@ -334,7 +338,7 @@ export const ATTACK_SURFACE_ANALYSIS_EXTERNAL_TOOL_CALLS: SecurityDedicatedSubag
 		useWhen:
 			"Use for authorized web endpoints before deeper crawling and whenever API documentation or metadata is discovered.",
 		prompt:
-			"Fetch robots.txt, sitemap.xml, public OpenAPI/Swagger docs, DNS/IP metadata, and approved GraphQL metadata as read-only evidence. Ask for explicit approval before GraphQL introspection and map auth boundaries without invoking sensitive operations.",
+			"Fetch robots.txt, sitemap.xml, public OpenAPI/Swagger docs, DNS/IP metadata, GraphQL landing pages, and approved metadata endpoints as read-only evidence. Ask for explicit approval before GraphQL introspection and map auth boundaries without invoking sensitive operations.",
 		safetyConstraints: sharedAttackSurfaceSafetyConstraints,
 	},
 ];

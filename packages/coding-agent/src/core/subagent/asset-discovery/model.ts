@@ -6,9 +6,25 @@ export const ASSET_DISCOVERY_MODEL: SecurityDedicatedSubagentModel = {
 	role: "asset_discovery_agent",
 	mission:
 		"Build the authorized asset baseline from supplied scope, passive sources, DNS/API metadata, and bounded authorized discovery.",
-	focus: ["domains", "hosts", "URLs", "CIDRs", "cloud or third-party exposure", "open services"],
+	focus: [
+		"domains",
+		"hosts",
+		"URLs",
+		"CIDRs",
+		"cloud or third-party exposure",
+		"open services",
+		"technology fingerprints",
+		"paths and virtual hosts",
+	],
 	requiredInputs: ["authorized targets", "test window", "out-of-scope assets", "approved port scope"],
-	produces: ["asset inventory", "live host/service observations", "source references", "coverage gaps"],
+	produces: [
+		"asset inventory",
+		"live host/service observations",
+		"technology fingerprint hints",
+		"path and virtual-host observations",
+		"source references",
+		"coverage gaps",
+	],
 	boundaries: [
 		"Do not analyze exploitability or PoC viability.",
 		"Do not broaden targets beyond the explicit authorization scope.",

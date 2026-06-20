@@ -78,6 +78,7 @@ export const POC_RESEARCH_BUILT_IN_TOOL_CALLS: SecurityDedicatedSubagentToolCall
 		promptGuidelines: [
 			"Use for stable structured sources: NVD, CVE.org, MITRE ATT&CK, GitHub Security Advisories, and vendor/package metadata APIs.",
 			"Use source/cve_id/query/limit for normalized vulnerability metadata lookup.",
+			"Prioritize queries from technology fingerprints, service/version banners, discovered admin/docs paths, OpenAPI metadata, and scanner template IDs.",
 			"Do not turn exploit references into execution steps.",
 		],
 		parameters: [
@@ -350,12 +351,13 @@ export const POC_RESEARCH_EXTERNAL_TOOL_CALLS: SecurityDedicatedSubagentExternal
 		inputsNeeded: [
 			"scanner_type such as Nessus, OpenVAS, Nikto, OWASP ZAP, Burp Suite Scanner, WPScan, or Nuclei",
 			"imported scanner report or explicitly authorized scanner scope",
+			"fingerprint/path-discovery evidence such as WhatWeb, httpx, Nmap -sV, ffuf, dirsearch, gobuster, Katana, or Nuclei template metadata",
 		],
 		expectedOutput:
-			"findings, plugin/template IDs, CVEs, affected hosts/URLs, evidence, confidence, and remediation text",
+			"findings, plugin/template IDs, matched technologies, discovered paths, CVEs, affected hosts/URLs, evidence, confidence, and remediation text",
 		useWhen: "Use when network or application scanner output is available for corroboration.",
 		prompt:
-			"Prefer imported scanner output. If execution is explicitly authorized, call security_scope_status first, keep scope bounded, and do not trigger exploit PoCs or intrusive checks.",
+			"Prefer imported scanner and discovery output, including Nuclei metadata, Nikto/WPScan observations, WhatWeb/httpx fingerprints, and ffuf/dirsearch/gobuster paths. If execution is explicitly authorized, call security_scope_status first, keep scope bounded, and do not trigger exploit PoCs or intrusive checks.",
 		safetyConstraints: sharedPocResearchSafetyConstraints,
 	},
 	{
